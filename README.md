@@ -3,7 +3,7 @@
 This is a team project to build a basic interpreter for the LOLCODE programming language.
 
 ## Language of Choice
-Python
+**Python**
 
 We chose Python because of its readability, simplicity, and powerful support for writing interpreters.
 
