@@ -1,5 +1,6 @@
 """
-Simple test script for the LOLCODE interpreter
+Simple test script for the LOLCODE interpreter (Week 2)
+Looks for .lol test files in the ./test/ directory
 """
 
 import os
@@ -37,15 +38,20 @@ def run_test(test_file):
     print()
 
 def main():
-    """Run all test files"""
+    """Run all test files in ./test/"""
+    test_dir = 'test'
     
-    test_files = [f for f in os.listdir('.') if f.endswith('.lol')]
+    if not os.path.exists(test_dir):
+        print("❌ 'test/' directory not found.")
+        return
+
+    test_files = [os.path.join(test_dir, f) for f in os.listdir(test_dir) if f.endswith('.lol')]
     
     if not test_files:
-        print("No .lol test files found in the current directory.")
+        print("No .lol test files found in the 'test/' directory.")
         return
     
-    print(f"Found {len(test_files)} test files.")
+    print(f"Found {len(test_files)} test file(s).")
     
     for test_file in test_files:
         run_test(test_file)

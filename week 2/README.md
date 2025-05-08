@@ -19,3 +19,6 @@ This folder contains the source code and test files for the working LOLCODE inte
 ```bash
 python main.py test/hello_world.lol
 python main.py test/conditional.lol
+
+# Or run all tests using:
+python test_interpreter.py
