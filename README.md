@@ -17,8 +17,10 @@ We chose Python because of its readability, simplicity, and powerful support for
 ## Repository Structure
 - `team.txt` – list of group members
 - `.gitignore` – excluded files
-- `docs/` – research documents and flowchart
-- `README.md` – project overview
+- `week1/` – research documents and flowchart
+- `week2/` – source code for the LOLCODE interpreter and test files
+- `README.md` – project overview and navigation
+- `PROGRESS.md` – weekly team progress logs
 
 ## Instructor
 - GitHub: [@Eieyron](https://github.com/Eieyron)
