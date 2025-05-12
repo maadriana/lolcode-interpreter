@@ -7,7 +7,7 @@ class Interpreter:
     def __init__(self, ast):
         self.ast = ast
         self.variables = {}
-        self.it_value = None  
+        self.it_value = None
 
     def interpret(self):
         if not self.ast or self.ast.type != 'PROGRAM':
@@ -65,7 +65,7 @@ class Interpreter:
             raise NameError(f"Variable '{var_name}' not declared")
 
         user_input = input()
-        
+
         try:
             self.variables[var_name] = int(user_input)
         except ValueError:
@@ -73,11 +73,10 @@ class Interpreter:
                 self.variables[var_name] = float(user_input)
             except ValueError:
                 self.variables[var_name] = user_input
-        
+
         self.variables['IT'] = self.variables[var_name]
 
     def execute_conditional(self, node):
-        
         condition = self.variables['IT']
         condition_result = self.is_truthy(condition)
 
@@ -109,13 +108,11 @@ class Interpreter:
             right = self.evaluate_expression(node.children[1])
             try:
                 result = float(left) + float(right)
-                
                 if result.is_integer():
                     result = int(result)
                 self.variables['IT'] = result
                 return result
             except (ValueError, TypeError):
-                
                 result = str(left) + str(right)
                 self.variables['IT'] = result
                 return result
@@ -125,7 +122,6 @@ class Interpreter:
             right = self.evaluate_expression(node.children[1])
             try:
                 result = float(left) - float(right)
-                
                 if result.is_integer():
                     result = int(result)
                 self.variables['IT'] = result
@@ -138,7 +134,6 @@ class Interpreter:
             right = self.evaluate_expression(node.children[1])
             try:
                 result = float(left) * float(right)
-                
                 if result.is_integer():
                     result = int(result)
                 self.variables['IT'] = result
@@ -153,7 +148,6 @@ class Interpreter:
                 if float(right) == 0:
                     raise ZeroDivisionError("Division by zero")
                 result = float(left) / float(right)
-                
                 if result.is_integer():
                     result = int(result)
                 self.variables['IT'] = result
@@ -182,7 +176,6 @@ class Interpreter:
                 left_val = float(left)
                 right_val = float(right)
                 result = max(left_val, right_val)
-                
                 if result.is_integer():
                     result = int(result)
                 self.variables['IT'] = result
@@ -197,7 +190,6 @@ class Interpreter:
                 left_val = float(left)
                 right_val = float(right)
                 result = min(left_val, right_val)
-                
                 if result.is_integer():
                     result = int(result)
                 self.variables['IT'] = result
@@ -246,6 +238,12 @@ class Interpreter:
             self.variables['IT'] = result
             return result
 
+        elif node.type == 'OP_SMOOSH':
+            parts = [self.evaluate_expression(child) for child in node.children]
+            result = ''.join(map(self.to_string, parts))
+            self.variables['IT'] = result
+            return result
+
         return None
 
     def is_truthy(self, value):
@@ -256,10 +254,8 @@ class Interpreter:
         if isinstance(value, (int, float)):
             return value != 0
         if isinstance(value, str):
-            
             if value.strip() == '' or value.upper() == 'FAIL':
                 return False
-            
             try:
                 if float(value) == 0:
                     return False

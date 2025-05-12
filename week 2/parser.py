@@ -63,10 +63,12 @@ class Parser:
 
         elif token.type == 'IF_START':
             return self.parse_conditional()
-            
-        
-        elif token.type in ['OP_ADD', 'OP_SUB', 'OP_MUL', 'OP_DIV', 'OP_MOD', 'OP_MAX', 'OP_MIN', 
-                           'OP_EQUAL', 'OP_NOT_EQUAL', 'OP_AND', 'OP_OR', 'OP_XOR', 'OP_NOT']:           
+
+        elif token.type in [
+            'OP_ADD', 'OP_SUB', 'OP_MUL', 'OP_DIV', 'OP_MOD', 'OP_MAX', 'OP_MIN',
+            'OP_EQUAL', 'OP_NOT_EQUAL', 'OP_AND', 'OP_OR', 'OP_XOR', 'OP_NOT',
+            'OP_SMOOSH'
+        ]:
             expr = self.parse_expression()
             return ASTNode('VAR_ASSIGNMENT', [expr], 'IT')
 
@@ -77,7 +79,7 @@ class Parser:
         self.consume('VAR_DECLARATION')
 
         if self.current >= len(self.tokens) or self.tokens[self.current].type != 'IDENTIFIER':
-            raise SyntaxError("Expected variable name after 'I HAS A'")
+            raise self.syntax_error("Expected variable name after 'I HAS A'")
 
         var_name = self.tokens[self.current].value
         self.current += 1
@@ -106,7 +108,7 @@ class Parser:
         self.consume('INPUT')
 
         if self.current >= len(self.tokens) or self.tokens[self.current].type != 'IDENTIFIER':
-            raise SyntaxError("Expected variable name after 'GIMMEH'")
+            raise self.syntax_error("Expected variable name after 'GIMMEH'")
 
         var_name = self.tokens[self.current].value
         self.current += 1
@@ -117,7 +119,7 @@ class Parser:
         cond_node = ASTNode('CONDITIONAL')
 
         if self.current >= len(self.tokens) or self.tokens[self.current].type != 'IF_TRUE':
-            raise SyntaxError("Expected 'YA RLY' after 'O RLY?'")
+            raise self.syntax_error("Expected 'YA RLY' after 'O RLY?'")
 
         self.consume('IF_TRUE')
         true_branch = ASTNode('TRUE_BRANCH')
@@ -141,14 +143,14 @@ class Parser:
             cond_node.children.append(false_branch)
 
         if self.current >= len(self.tokens) or self.tokens[self.current].type != 'IF_END':
-            raise SyntaxError("Expected 'OIC' to end conditional")
+            raise self.syntax_error("Expected 'OIC' to end conditional")
 
         self.consume('IF_END')
         return cond_node
 
     def parse_expression(self):
         if self.current >= len(self.tokens):
-            raise SyntaxError("Unexpected end of input while parsing expression")
+            raise self.syntax_error("Unexpected end of input while parsing expression")
 
         token = self.tokens[self.current]
 
@@ -161,45 +163,13 @@ class Parser:
             self.current += 1
             return ASTNode('VARIABLE', [], var_name)
 
-        elif token.type in ['OP_ADD', 'OP_SUB', 'OP_MUL', 'OP_DIV', 'OP_MOD', 'OP_MAX', 'OP_MIN']:
+        elif token.type in [
+            'OP_ADD', 'OP_SUB', 'OP_MUL', 'OP_DIV', 'OP_MOD', 'OP_MAX', 'OP_MIN',
+            'OP_EQUAL', 'OP_NOT_EQUAL', 'OP_AND', 'OP_OR', 'OP_XOR']:
             op_type = token.type
             self.current += 1
             left = self.parse_expression()
-            
-            
-            if self.current < len(self.tokens) and self.tokens[self.current].type == 'CONNECTOR':
-                self.consume('CONNECTOR')
-            else:
-                raise SyntaxError(f"Expected 'AN' connector in binary operation")
-                
-            right = self.parse_expression()
-            return ASTNode(op_type, [left, right])
-
-        elif token.type in ['OP_EQUAL', 'OP_NOT_EQUAL']:
-            op_type = token.type
-            self.current += 1
-            left = self.parse_expression()
-            
-            
-            if self.current < len(self.tokens) and self.tokens[self.current].type == 'CONNECTOR':
-                self.consume('CONNECTOR')
-            else:
-                raise SyntaxError(f"Expected 'AN' connector in comparison operation")
-                
-            right = self.parse_expression()
-            return ASTNode(op_type, [left, right])
-
-        elif token.type in ['OP_AND', 'OP_OR', 'OP_XOR']:
-            op_type = token.type
-            self.current += 1
-            left = self.parse_expression()
-            
-            
-            if self.current < len(self.tokens) and self.tokens[self.current].type == 'CONNECTOR':
-                self.consume('CONNECTOR')
-            else:
-                raise SyntaxError(f"Expected 'AN' connector in logical operation")
-                
+            self.consume('CONNECTOR')
             right = self.parse_expression()
             return ASTNode(op_type, [left, right])
 
@@ -208,15 +178,22 @@ class Parser:
             operand = self.parse_expression()
             return ASTNode('OP_NOT', [operand])
 
-        else:
-            raise SyntaxError(f"Unexpected token in expression: {token.type}")
+        elif token.type == 'OP_SMOOSH':
+            self.current += 1
+            args = [self.parse_expression()]
+            while self.current < len(self.tokens) and self.tokens[self.current].type == 'CONNECTOR':
+                self.consume('CONNECTOR')
+                args.append(self.parse_expression())
+            return ASTNode('OP_SMOOSH', args)
+
+        raise self.syntax_error(f"Unexpected token in expression: {token.type}")
 
     def consume(self, expected_type):
         if self.current >= len(self.tokens):
-            raise SyntaxError(f"Unexpected end of input, expected {expected_type}")
+            raise self.syntax_error(f"Unexpected end of input, expected {expected_type}")
 
         if self.tokens[self.current].type != expected_type:
-            raise SyntaxError(f"Expected {expected_type}, got {self.tokens[self.current].type}")
+            raise self.syntax_error(f"Expected {expected_type}, got {self.tokens[self.current].type}")
 
         self.current += 1
 
@@ -224,3 +201,9 @@ class Parser:
         if self.current + 1 >= len(self.tokens):
             return None
         return self.tokens[self.current + 1]
+
+    def syntax_error(self, message):
+        token = self.tokens[self.current] if self.current < len(self.tokens) else None
+        if token:
+            return SyntaxError(f"Syntax Error (line {token.line}): {message}")
+        return SyntaxError(message)

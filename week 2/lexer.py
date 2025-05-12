@@ -49,6 +49,7 @@ class Lexer:
         "OIC": "IF_END",
         "AN": "CONNECTOR",
         "NOT": "OP_NOT",
+        "SMOOSH": "OP_SMOOSH"
     }
 
     def __init__(self, source_code):
@@ -63,7 +64,7 @@ class Lexer:
             while i < len(words):
                 word = words[i]
 
-                
+                # Handle string literals
                 if word.startswith('"'):
                     string_token = word
                     while not string_token.endswith('"') and i + 1 < len(words):
@@ -72,9 +73,8 @@ class Lexer:
                     self.tokens.append(Token("STRING_LITERAL", string_token.strip('"'), line_num + 1, i))
                     i += 1
                     continue
-                
 
-                
+                # Try 3-word phrases
                 if i + 2 < len(words):
                     phrase = f"{words[i]} {words[i + 1]} {words[i + 2]}"
                     if phrase in self.TOKEN_TYPES:
@@ -82,7 +82,7 @@ class Lexer:
                         i += 3
                         continue
 
-                
+                # Try 2-word phrases
                 if i + 1 < len(words):
                     phrase = f"{words[i]} {words[i + 1]}"
                     if phrase in self.TOKEN_TYPES:
@@ -90,19 +90,18 @@ class Lexer:
                         i += 2
                         continue
 
-                
+                # Single-word tokens
                 if word in self.TOKEN_TYPES:
                     self.tokens.append(Token(self.TOKEN_TYPES[word], word, line_num + 1, i))
                     i += 1
                     continue
 
-                
+                # Check for literals
                 if word.isdigit():
                     self.tokens.append(Token("INT_LITERAL", int(word), line_num + 1, i))
                     i += 1
                     continue
 
-                
                 if word == "WIN":
                     self.tokens.append(Token("BOOL_LITERAL", True, line_num + 1, i))
                     i += 1
@@ -112,7 +111,7 @@ class Lexer:
                     i += 1
                     continue
 
-                
+                # Otherwise treat as identifier or unknown
                 if word.isidentifier():
                     self.tokens.append(Token("IDENTIFIER", word, line_num + 1, i))
                 else:
