@@ -17,7 +17,7 @@ GIMMEH y
 y R SUM OF y AN 0
 
 I HAS A tmp_str ITZ SMOOSH "YOUR NUMBERS ARE: " AN x MKAY
-I HAS A final_str ITZ SMOOSH tmp_str AN " AND " MKAY
+I HAS A final_str ITZ SMOOSH tmp_str AN ", " MKAY
 I HAS A full_output ITZ SMOOSH final_str AN y MKAY
 VISIBLE full_output
 

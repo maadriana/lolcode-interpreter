@@ -18,7 +18,8 @@ We chose Python because of its readability, simplicity, and powerful support for
 - `team.txt` – list of group members
 - `.gitignore` – excluded files
 - `week1/` – research documents and flowchart
-- `week2/` – source code for the LOLCODE interpreter and test files
+- `week2-3/` – source code for the LOLCODE interpreter and test files
+- `reflection/` – individual 1-page reflections from each team member
 - `README.md` – project overview and navigation
 - `PROGRESS.md` – weekly team progress logs
 

@@ -37,7 +37,7 @@ This file contains our weekly progress summaries and deliverable status for the 
   - `hello_world.lol`
   - `conditional.lol`
 - Logic verified via test runs
-- Git repo updated with all source and test files in `week2/`
+- Git repo updated with all source and test files in `week2-3/`
 
 **Challenges Faced:**
 - Parser required exact structure for `O RLY?` blocks
@@ -58,3 +58,32 @@ This file contains our weekly progress summaries and deliverable status for the 
 
 ---
 
+## Week 3: Finalization & Enhancements
+
+**Objectives:**
+- Finalize the interpreter with complete LOLCODE feature support
+- Add bonus features: `SMOOSH`, `WIN`/`FAIL`, nested expressions
+- Build GUI runner for loading and running `.lol` files
+- Add unit tests and edge case validation
+- Polish documentation and folder structure
+
+**Deliverables Completed:**
+- Added advanced features:
+  - `SMOOSH`, nested expressions, TROOF checks, line-number errors
+- Created GUI app (`gui_runner.py`) using Tkinter
+- Added `test/final_test.lol` covering all features
+- Implemented `unittest` suite for interpreter behavior
+- Finalized `README.md`, `PROGRESS.md`, and reflection content
+
+**Challenges Faced:**
+- SMOOSH and multiple AN parsing was interpreter-sensitive
+- GUI integration with input/output required flushing fixes
+- Ensuring backward compatibility with earlier test files
+
+**Wins:**
+- All `.lol` test files pass successfully
+- GUI and CLI both fully functional
+- Interpreter structure is modular and robust
+- All bonus features completed for extra credit
+
+**Status:** Completed
